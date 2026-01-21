@@ -3,6 +3,14 @@ const pool = require("../db");
 
 const router = express.Router();
 
+
+
+const {
+  sendTrackingActivatedEmail,
+  sendStatusUpdateEmail,
+} = require("../services/notifications");
+
+
 // webhook auth
 function verifyWebhook(req, res, next) {
   const secret = req.headers["x-webhook-secret"];
@@ -92,9 +100,7 @@ router.post("/orders", verifyWebhook, async (req, res) => {
     );
 
     // mock email notification
-    console.log(
-      `Tracking activated for ${customer_email} (Order ${external_order_id})`
-    );
+    sendTrackingActivatedEmail(customer_email, external_order_id);
 
     res.status(201).json({
       message: "Order received and tracking activated",
@@ -107,3 +113,85 @@ router.post("/orders", verifyWebhook, async (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
+const VALID_STATUSES = [
+  "PENDING",
+  "IN_TRANSIT",
+  "OUT_FOR_DELIVERY",
+  "DELIVERED",
+];
+
+router.post("/status-updates", verifyWebhook, async (req, res) => {
+  const {
+    external_order_id,
+    new_status,
+    note,
+    timestamp,
+  } = req.body;
+
+  if (!external_order_id || !new_status) {
+    return res.status(400).json({ error: "Missing order ID or status" });
+  }
+
+  if (!VALID_STATUSES.includes(new_status)) {
+    return res.status(400).json({ error: "Invalid status value" });
+  }
+
+  try {
+    const orderResult = await pool.query(
+    `SELECT id, current_status, customer_email 
+    FROM orders 
+    WHERE external_order_id = $1`,
+    [external_order_id]
+    );
+
+
+
+    if (orderResult.rows.length === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    const order = orderResult.rows[0];
+
+    // simple transition rule: don't allow same status twice
+    if (order.current_status === new_status) {
+      return res.status(400).json({ error: "Order already in this status" });
+    }
+
+    const eventTime = timestamp ? new Date(timestamp) : new Date();
+
+    // insert status event
+    await pool.query(
+      `INSERT INTO status_events (order_id, status, note, timestamp)
+       VALUES ($1, $2, $3, $4)`,
+      [order.id, new_status, note || null, eventTime]
+    );
+
+    // update order current status
+    await pool.query(
+      `UPDATE orders 
+       SET current_status = $1 
+       WHERE id = $2`,
+      [new_status, order.id]
+    );
+
+    // mock email notification
+    sendStatusUpdateEmail(
+    order.customer_email || "unknown",
+    external_order_id,
+    new_status
+    );
+
+    res.json({
+      message: "Order status updated",
+      order_id: external_order_id,
+      new_status: new_status,
+    });
+  } catch (err) {
+    console.error("Status update error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});

@@ -4,6 +4,9 @@ const pool = require("../db");
 
 const router = express.Router();
 
+
+const { sendOtpEmail } = require("../services/notifications");
+
 // simple OTP generator
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -41,9 +44,7 @@ router.post("/register", async (req, res) => {
     const companyId = result.rows[0].id;
 
     // mock email sending
-    console.log(
-      `OTP for ${business_email}: ${otpCode} (valid 10 minutes)`
-    );
+    sendOtpEmail(business_email, otpCode);
 
     res.status(201).json({
       message: "Company registered. Please verify OTP sent to email.",
