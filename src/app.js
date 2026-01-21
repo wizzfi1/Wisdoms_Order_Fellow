@@ -12,12 +12,24 @@ const adminRoutes = require("./routes/admin");
 
 const webhooksRoutes = require("./routes/webhooks");
 
+const ordersRoutes = require("./routes/orders");
+const rateLimit = require("express-rate-limit");
+
+
 app.use(express.json());
+
+const webhookLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 30, // 30 requests per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 app.use("/auth", authRoutes);
 app.use("/kyc", kycRoutes);
 app.use("/admin", adminRoutes);
-app.use("/webhooks", webhooksRoutes);
+app.use("/webhooks", webhookLimiter, webhooksRoutes);
+app.use("/orders", ordersRoutes);
 app.get("/", (req, res) => {
   res.send("My Order Fellow API running");
 });
