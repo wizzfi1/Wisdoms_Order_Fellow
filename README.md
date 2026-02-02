@@ -6,7 +6,7 @@ This project implements the full **My Order Fellow** specification as a **defens
 
 ---
 
-## 🚀 Features
+## Features
 
 ### Authentication & Onboarding
 
@@ -65,7 +65,7 @@ This project implements the full **My Order Fellow** specification as a **defens
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
 * Node.js
 * Express
@@ -79,7 +79,7 @@ No ORMs. No microservices. No background workers.
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 src/
@@ -99,7 +99,7 @@ src/
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 ### 1) Clone the repo
 
@@ -191,7 +191,7 @@ Connected to Postgres
 
 ---
 
-## 📌 API Endpoints
+## API Endpoints
 
 ### Authentication
 
@@ -336,7 +336,7 @@ GET /orders/:external_order_id
 
 ---
 
-## 🧠 Design Decisions
+## Design Decisions
 
 * **Single-service MVP** — avoids premature architectural complexity
 * **Plain SQL** — keeps business logic explicit and reviewable
@@ -347,7 +347,7 @@ GET /orders/:external_order_id
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 * Replace static admin secret with role-based auth
 * Add JWT-based company authentication
@@ -358,7 +358,7 @@ GET /orders/:external_order_id
 
 ---
 
-## 🏁 Summary
+## Summary
 
 This project demonstrates:
 
