@@ -125,8 +125,8 @@ PORT=3000
 
 DATABASE_URL=postgres://user:password@host:5432/wisdoms_order_fellow
 
-WEBHOOK_SECRET=supersecretkey
-ADMIN_SECRET=admin123
+WEBHOOK_SECRET=<WEBHOOK_SECRET>
+ADMIN_SECRET=<ADMIN_SECRET>
 
 RESEND_API_KEY=re_xxxxxxxxx
 EMAIL_FROM=My Order Fellow <onboarding@resend.dev>
@@ -257,7 +257,7 @@ POST /admin/kyc/:company_id/approve
 Header:
 
 ```
-x-admin-secret: admin123
+x-admin-secret: <ADMIN_SECRET>
 ```
 
 ---
@@ -271,7 +271,7 @@ POST /admin/kyc/:company_id/reject
 Header:
 
 ```
-x-admin-secret: admin123
+x-admin-secret: adm<ADMIN_SECRET>
 ```
 
 ---
@@ -287,7 +287,7 @@ POST /webhooks/orders
 Headers:
 
 ```
-x-webhook-secret: supersecretkey
+x-webhook-secret: <WEBHOOK_SECRET>
 ```
 
 ```json
@@ -313,7 +313,7 @@ POST /webhooks/status-updates
 Headers:
 
 ```
-x-webhook-secret: supersecretkey
+x-webhook-secret: <WEBHOOK_SECRET>
 ```
 
 ```json
