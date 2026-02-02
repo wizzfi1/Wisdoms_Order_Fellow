@@ -74,7 +74,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"business_email\": \"acme@example.com\",\r\n  \"otp_code\": \"123456\"\r\n}\r\n",
+              "raw": "{\r\n  \"business_email\": \"wizz@example.com\",\r\n  \"otp_code\": \"123456\"\r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -106,7 +106,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"business_email\": \"acme@example.com\",\r\n  \"business_registration_number\": \"RC-839201\",\r\n  \"business_address\": \"12 Allen Avenue, Lagos\",\r\n  \"contact_person_name\": \"John Manager\",\r\n  \"contact_person_phone\": \"+2348012345678\"\r\n}\r\n",
+              "raw": "{\r\n  \"business_email\": \"wizz@example.com\",\r\n  \"business_registration_number\": \"RC-839201\",\r\n  \"business_address\": \"12 Allen Avenue, Lagos\",\r\n  \"contact_person_name\": \"John Manager\",\r\n  \"contact_person_phone\": \"+2348012345678\"\r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -180,7 +180,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"external_order_id\": \"{{external_order_id}}\",\r\n  \"customer_name\": \"Jane Doe\",\r\n  \"customer_email\": \"jane@example.com\",\r\n  \"delivery_address\": \"15 Admiralty Way, Lekki\",\r\n  \"item_summary\": \"2x Shoes, 1x Bag\",\r\n  \"initial_status\": \"PENDING\",\r\n  \"business_email\": \"acme@example.com\"\r\n}\r\n",
+              "raw": "{\r\n  \"external_order_id\": \"{{external_order_id}}\",\r\n  \"customer_name\": \"Jane Doe\",\r\n  \"customer_email\": \"jane@example.com\",\r\n  \"delivery_address\": \"15 Admiralty Way, Lekki\",\r\n  \"item_summary\": \"2x Shoes, 1x Bag\",\r\n  \"initial_status\": \"PENDING\",\r\n  \"business_email\": \"wizz@example.com\"\r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"

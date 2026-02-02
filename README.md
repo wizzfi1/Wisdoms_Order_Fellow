@@ -12,7 +12,7 @@ This project implements the full **My Order Fellow** specification as a **defens
 
 * Company registration (email + password)
 * Password hashing with bcrypt
-* Email verification via OTP (**real SMTP email delivery**)
+* Email verification via OTP (**real email delivery via Resend API**)
 * KYC submission
 * Admin KYC approval / rejection
 
@@ -33,14 +33,17 @@ This project implements the full **My Order Fellow** specification as a **defens
 
 ### Notifications
 
-* Real email notifications via SMTP (Nodemailer)
+* Real email notifications via **Resend (HTTPS-based email API)**
+* Non-blocking, fire-and-forget delivery
 * Triggered on:
 
   * OTP generation
   * Tracking activation
   * Status updates
 
-> Notification logic is isolated in a service layer, allowing SMTP to be swapped or mocked without changing route logic.
+> Notification logic is isolated in a service layer, allowing providers to be swapped or mocked without changing route logic.
+
+> Domain verification is required by email providers to deliver messages to arbitrary recipients. This MVP uses verified addresses for testing without requiring code changes.
 
 ### Order Lookup API
 
@@ -69,7 +72,7 @@ This project implements the full **My Order Fellow** specification as a **defens
 * PostgreSQL
 * bcrypt
 * dotenv
-* nodemailer
+* resend
 * express-rate-limit
 
 No ORMs. No microservices. No background workers.
@@ -120,33 +123,18 @@ npm install
 ```env
 PORT=3000
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=your_postgres_password
-DB_NAME=wisdoms_order_fellow
+DATABASE_URL=postgres://user:password@host:5432/wisdoms_order_fellow
 
 WEBHOOK_SECRET=supersecretkey
 ADMIN_SECRET=admin123
 
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-SMTP_FROM=My Order Fellow <your_email@gmail.com>
+RESEND_API_KEY=re_xxxxxxxxx
+EMAIL_FROM=My Order Fellow <onboarding@resend.dev>
 ```
 
 ---
 
-### 4) Create Database
-
-```sql
-CREATE DATABASE wisdoms_order_fellow;
-```
-
----
-
-### 5) Create Tables
+### 4) Create Tables
 
 ```sql
 CREATE TABLE companies (
@@ -188,7 +176,7 @@ CREATE TABLE status_events (
 
 ---
 
-### 6) Run the server
+### 5) Run the server
 
 ```bash
 node src/app.js
@@ -215,8 +203,8 @@ POST /auth/register
 
 ```json
 {
-  "company_name": "Acme Shop",
-  "business_email": "acme@example.com",
+  "company_name": "wizzo Shop",
+  "business_email": "wizzymoney@example.com",
   "password": "secret123"
 }
 ```
@@ -231,7 +219,7 @@ POST /auth/verify-otp
 
 ```json
 {
-  "business_email": "acme@example.com",
+  "business_email": "wizzymoney@example.com",
   "otp_code": "123456"
 }
 ```
@@ -248,10 +236,10 @@ POST /kyc/submit
 
 ```json
 {
-  "business_email": "acme@example.com",
+  "business_email": "wizzymoney@example.com",
   "business_registration_number": "RC-839201",
   "business_address": "12 Allen Avenue, Lagos",
-  "contact_person_name": "John Manager",
+  "contact_person_name": "Wisdom Shaib",
   "contact_person_phone": "+2348012345678"
 }
 ```
@@ -305,12 +293,12 @@ x-webhook-secret: supersecretkey
 ```json
 {
   "external_order_id": "ORD-1001",
-  "customer_name": "Jane Doe",
-  "customer_email": "jane@example.com",
-  "delivery_address": "15 Admiralty Way, Lekki",
+  "customer_name": "Wisdom Shaib",
+  "customer_email": "wizz@example.com",
+  "delivery_address": "15 Alimosho Way, Ipaja",
   "item_summary": "2x Shoes, 1x Bag",
   "initial_status": "PENDING",
-  "business_email": "acme@example.com"
+  "business_email": "wizzymoney@example.com"
 }
 ```
 
@@ -352,8 +340,8 @@ GET /orders/:external_order_id
 
 * **Single-service MVP** — avoids premature architectural complexity
 * **Plain SQL** — keeps business logic explicit and reviewable
-* **Service-layer notifications** — enables SMTP or mock swapping
-* **Strict status lifecycle enforcement** — prevents invalid state
+* **Service-layer notifications** — enables provider swapping without route changes
+* **Strict status lifecycle enforcement** — prevents invalid state transitions
 * **Static admin authentication** — sufficient for MVP scope
 * **Selective rate limiting** — applied only where needed
 
@@ -378,7 +366,7 @@ This project demonstrates:
 * Secure webhook design
 * Stateful order tracking systems
 * Event-driven backend logic
-* Real email integration
+* Real email integration via API-based providers
 * Defensive API design
 
 It was intentionally scoped as a **defensible MVP** to emphasize backend fundamentals, correctness, and clarity over infrastructure complexity.

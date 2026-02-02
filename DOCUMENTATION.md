@@ -38,8 +38,8 @@ POST /auth/register
 
 ```json
 {
-  "company_name": "Acme Shop",
-  "business_email": "acme@example.com",
+  "company_name": "wizzo Shop",
+  "business_email": "Wizzymoney@example.com",
   "password": "secret123"
 }
 ```
@@ -66,7 +66,7 @@ POST /auth/verify-otp
 
 ```json
 {
-  "business_email": "acme@example.com",
+  "business_email": "wizzymoney@example.com",
   "otp_code": "123456"
 }
 ```
@@ -94,10 +94,10 @@ POST /kyc/submit
 
 ```json
 {
-  "business_email": "acme@example.com",
-  "business_registration_number": "RC-839201",
+  "business_email": "wizzymoney@example.com",
+  "business_registration_number": "CAC-839201",
   "business_address": "12 Allen Avenue, Lagos",
-  "contact_person_name": "John Manager",
+  "contact_person_name": "Wisdom Shaib",
   "contact_person_phone": "+2348012345678"
 }
 ```
@@ -179,12 +179,12 @@ POST /webhooks/orders
 ```json
 {
   "external_order_id": "ORD-1001",
-  "customer_name": "Jane Doe",
-  "customer_email": "jane@example.com",
-  "delivery_address": "15 Admiralty Way, Lekki",
+  "customer_name": "Wisdom Shaib",
+  "customer_email": "wizzymoney@example.com",
+  "delivery_address": "15 Alimosho Way, Ipaja",
   "item_summary": "2x Shoes, 1x Bag",
   "initial_status": "PENDING",
-  "business_email": "acme@example.com"
+  "business_email": "wizzymoney@example.com"
 }
 ```
 
@@ -249,10 +249,10 @@ GET /orders/:external_order_id
 {
   "order_id": "ORD-1001",
   "customer": {
-    "name": "Jane Doe",
-    "email": "jane@example.com"
+    "name": "Wisdom Shaib",
+    "email": "wizzymoney@example.com"
   },
-  "delivery_address": "15 Admiralty Way, Lekki",
+  "delivery_address": "15 Alimosho way, Ipaja",
   "item_summary": "2x Shoes, 1x Bag",
   "current_status": "DELIVERED",
   "created_at": "2026-01-20T15:29:23.155Z",
@@ -275,7 +275,9 @@ GET /orders/:external_order_id
 
 ## 7. Notifications
 
-Email notifications are sent using SMTP via Nodemailer.
+Email notifications are delivered using **Resend**, an HTTPS-based email API.
+
+Notifications are sent **asynchronously (non-blocking)** so that email delivery does not delay or interrupt core API flows.
 
 Notifications are triggered on:
 
@@ -283,9 +285,10 @@ Notifications are triggered on:
 * Tracking activation
 * Order status updates
 
-Notification logic is isolated in a service layer, allowing easy replacement or mocking.
+The notification logic is isolated in a service layer, allowing the email provider to be swapped or mocked without changing route logic.
 
----
+> **Note on email delivery:** Email providers require sender domain verification to deliver messages to arbitrary recipients. In this MVP, verified addresses are used for testing. Full delivery can be enabled via configuration without code changes.
+
 
 ## 8. Rate Limiting
 
