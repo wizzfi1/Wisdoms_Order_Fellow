@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
     const companyId = result.rows[0].id;
 
     // mock email sending
-    sendOtpEmail(business_email, otpCode);
+    await sendOtpEmail(business_email, otpCode);
 
     res.status(201).json({
       message: "Company registered. Please verify OTP sent to email.",

@@ -2,7 +2,7 @@
 
 A simplified SaaS backend for real-time order tracking via webhooks.
 
-This project implements the full My Order Fellow spec as a **defensible MVP**: companies onboard via email + OTP + KYC, get approved by an admin, then send order and tracking updates through secured webhooks. Customers receive notifications and can query order status history.
+This project implements the full **My Order Fellow** specification as a **defensible backend MVP**. Companies onboard via email, OTP verification, and KYC; admins approve companies; approved companies send orders and tracking updates through secured webhooks. Customers receive real email notifications and can query full order status history.
 
 ---
 
@@ -12,7 +12,7 @@ This project implements the full My Order Fellow spec as a **defensible MVP**: c
 
 * Company registration (email + password)
 * Password hashing with bcrypt
-* Email verification via OTP (mocked)
+* Email verification via OTP (**real SMTP email delivery**)
 * KYC submission
 * Admin KYC approval / rejection
 
@@ -21,35 +21,37 @@ This project implements the full My Order Fellow spec as a **defensible MVP**: c
 * Secured webhook endpoint using shared secret
 * Order ingestion via webhook
 * KYC gating (only approved companies can send orders)
-* Tracking initialization
-* Status history creation
+* Tracking initialization on order creation
+* Initial status event creation
 
 ### Tracking Status Updates
 
 * Webhook-based status updates
 * Supported statuses: `PENDING`, `IN_TRANSIT`, `OUT_FOR_DELIVERY`, `DELIVERED`
-* Status transition validation
-* Audit trail stored in database
+* Strict status transition enforcement (no skipping or rollback)
+* Full audit trail stored in the database
 
 ### Notifications
 
-* Mock email notifications (console logs)
+* Real email notifications via SMTP (Nodemailer)
 * Triggered on:
 
   * OTP generation
   * Tracking activation
   * Status updates
 
+> Notification logic is isolated in a service layer, allowing SMTP to be swapped or mocked without changing route logic.
+
 ### Order Lookup API
 
-* Fetch order details by order ID
+* Fetch order details by external order ID
 * Returns:
 
   * Customer name & email
   * Delivery address
   * Item summary
   * Current status
-  * Full status history
+  * Full status history (chronological)
 
 ### Security
 
@@ -67,6 +69,7 @@ This project implements the full My Order Fellow spec as a **defensible MVP**: c
 * PostgreSQL
 * bcrypt
 * dotenv
+* nodemailer
 * express-rate-limit
 
 No ORMs. No microservices. No background workers.
@@ -114,7 +117,7 @@ npm install
 
 ### 3) Create `.env`
 
-```
+```env
 PORT=3000
 
 DB_HOST=localhost
@@ -125,6 +128,12 @@ DB_NAME=wisdoms_order_fellow
 
 WEBHOOK_SECRET=supersecretkey
 ADMIN_SECRET=admin123
+
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM=My Order Fellow <your_email@gmail.com>
 ```
 
 ---
@@ -185,7 +194,7 @@ CREATE TABLE status_events (
 node src/app.js
 ```
 
-You should see:
+Expected output:
 
 ```
 Server listening on port 3000
@@ -341,23 +350,23 @@ GET /orders/:external_order_id
 
 ## 🧠 Design Decisions
 
-* **Single-service MVP**: No microservices or background workers
-* **Plain SQL**: Avoided ORMs to keep logic explicit
-* **Mock notifications**: Email sending is console-logged
-* **Simple admin auth**: Static secret header
-* **Rate limiting**: Applied only to webhook endpoints
-* **Minimal data model**: No premature normalization
+* **Single-service MVP** — avoids premature architectural complexity
+* **Plain SQL** — keeps business logic explicit and reviewable
+* **Service-layer notifications** — enables SMTP or mock swapping
+* **Strict status lifecycle enforcement** — prevents invalid state
+* **Static admin authentication** — sufficient for MVP scope
+* **Selective rate limiting** — applied only where needed
 
 ---
 
 ## 🔮 Future Improvements
 
-* Replace mock notifications with SMTP or SendGrid
-* Add login and JWT authentication
+* Replace static admin secret with role-based auth
+* Add JWT-based company authentication
+* Introduce async job queue for notifications
 * Add admin dashboard UI
-* Introduce job queue for async email sending
-* Add multi-tenant isolation
-* Improve status transition rules
+* Support multi-tenant isolation
+* Expand order lifecycle (CANCELLED, FAILED)
 
 ---
 
@@ -367,12 +376,12 @@ This project demonstrates:
 
 * SaaS onboarding workflows
 * Secure webhook design
+* Stateful order tracking systems
 * Event-driven backend logic
-* Status tracking systems
-* API design
-* Security best practices
+* Real email integration
+* Defensive API design
 
-It was intentionally scoped as a **defensible MVP** to focus on backend fundamentals rather than infrastructure complexity.
+It was intentionally scoped as a **defensible MVP** to emphasize backend fundamentals, correctness, and clarity over infrastructure complexity.
 
 ---
 
