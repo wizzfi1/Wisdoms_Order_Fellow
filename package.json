@@ -25,6 +25,7 @@
     "express-rate-limit": "^8.2.1",
     "nodemailer": "^7.0.13",
     "pg": "^8.17.1",
-    "render": "^0.1.4"
+    "render": "^0.1.4",
+    "resend": "^6.9.1"
   }
 }
