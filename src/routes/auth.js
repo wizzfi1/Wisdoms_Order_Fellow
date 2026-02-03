@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+
 const pool = require("../db");
 
 const router = express.Router();
@@ -7,10 +8,11 @@ const router = express.Router();
 
 const { sendOtpEmail } = require("../services/notifications");
 
-// simple OTP generator
+// OTP generator
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
+
 
 router.post("/register", async (req, res) => {
   const { company_name, business_email, password } = req.body;
@@ -18,6 +20,7 @@ router.post("/register", async (req, res) => {
   if (!company_name || !business_email || !password) {
     return res.status(400).json({ error: "Missing required fields" });
   }
+
 
   try {
     const existing = await pool.query(
@@ -28,6 +31,7 @@ router.post("/register", async (req, res) => {
     if (existing.rows.length > 0) {
       return res.status(409).json({ error: "Email already registered" });
     }
+
 
     const passwordHash = await bcrypt.hash(password, 10);
     const otpCode = generateOtp();
@@ -55,6 +59,9 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
 
 router.post("/verify-otp", async (req, res) => {
   const { business_email, otp_code } = req.body;
@@ -109,5 +116,8 @@ router.post("/verify-otp", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
 
 module.exports = router;

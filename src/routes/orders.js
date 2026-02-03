@@ -1,4 +1,5 @@
 const express = require("express");
+
 const pool = require("../db");
 
 const router = express.Router();
@@ -21,6 +22,7 @@ router.get("/:external_order_id", async (req, res) => {
        WHERE o.external_order_id = $1`,
       [external_order_id]
     );
+
 
     if (orderResult.rows.length === 0) {
       return res.status(404).json({ error: "Order not found" });
@@ -53,5 +55,6 @@ router.get("/:external_order_id", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 module.exports = router;

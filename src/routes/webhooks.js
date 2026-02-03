@@ -1,4 +1,5 @@
 const express = require("express");
+
 const pool = require("../db");
 
 const router = express.Router();
@@ -19,9 +20,7 @@ function verifyWebhook(req, res, next) {
   next();
 }
 
-/**
- * ORDER INTAKE WEBHOOK
- */
+//  ORDER INTAKE WEBHOOK
 router.post("/orders", verifyWebhook, async (req, res) => {
   const {
     external_order_id,
@@ -44,6 +43,7 @@ router.post("/orders", verifyWebhook, async (req, res) => {
   }
 
   try {
+
     // find company
     const companyResult = await pool.query(
       `SELECT id, kyc_status 
@@ -62,6 +62,7 @@ router.post("/orders", verifyWebhook, async (req, res) => {
       return res.status(403).json({ error: "Company KYC not approved" });
     }
 
+
     // prevent duplicate orders
     const existingOrder = await pool.query(
       "SELECT id FROM orders WHERE external_order_id = $1",
@@ -72,7 +73,9 @@ router.post("/orders", verifyWebhook, async (req, res) => {
       return res.status(409).json({ error: "Order already exists" });
     }
 
+
     // insert order
+
     const orderResult = await pool.query(
       `INSERT INTO orders 
         (external_order_id, company_id, customer_name, customer_email, delivery_address, item_summary, current_status)
@@ -91,12 +94,14 @@ router.post("/orders", verifyWebhook, async (req, res) => {
 
     const orderId = orderResult.rows[0].id;
 
+
     // initialize status history
     await pool.query(
       `INSERT INTO status_events (order_id, status, note, timestamp)
        VALUES ($1, $2, $3, $4)`,
       [orderId, initial_status, "Tracking activated", new Date()]
     );
+
 
     // mock email notification
     await sendTrackingActivatedEmail(customer_email, external_order_id);
@@ -111,9 +116,7 @@ router.post("/orders", verifyWebhook, async (req, res) => {
   }
 });
 
-/**
- * STATUS UPDATE WEBHOOK
- */
+//  STATUS UPDATE WEBHOOK
 
 const VALID_STATUSES = [
   "PENDING",
@@ -166,11 +169,13 @@ router.post("/status-updates", verifyWebhook, async (req, res) => {
     const eventTime = timestamp ? new Date(timestamp) : new Date();
 
     // insert status event
+
     await pool.query(
       `INSERT INTO status_events (order_id, status, note, timestamp)
        VALUES ($1, $2, $3, $4)`,
       [order.id, new_status, note || null, eventTime]
     );
+
 
     // update order current status
     await pool.query(
@@ -180,7 +185,10 @@ router.post("/status-updates", verifyWebhook, async (req, res) => {
       [new_status, order.id]
     );
 
+
     // mock email notification
+
+
     await sendStatusUpdateEmail(
       order.customer_email || "unknown",
       external_order_id,
@@ -197,5 +205,7 @@ router.post("/status-updates", verifyWebhook, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 
 module.exports = router;

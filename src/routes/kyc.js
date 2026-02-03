@@ -1,5 +1,7 @@
 const express = require("express");
+
 const pool = require("../db");
+
 
 const router = express.Router();
 
@@ -21,6 +23,8 @@ router.post("/submit", async (req, res) => {
   ) {
     return res.status(400).json({ error: "Missing required KYC fields" });
   }
+
+
 
   try {
     const result = await pool.query(
@@ -44,7 +48,7 @@ router.post("/submit", async (req, res) => {
       return res.status(400).json({ error: "KYC already approved" });
     }
 
-    // store KYC info directly on companies table for MVP
+    // store KYC info directly on companies table
     await pool.query(
       `UPDATE companies 
        SET 
@@ -69,5 +73,7 @@ router.post("/submit", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 
 module.exports = router;

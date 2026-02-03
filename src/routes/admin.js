@@ -1,9 +1,13 @@
 const express = require("express");
+
 const pool = require("../db");
+
 
 const router = express.Router();
 
-// very simple admin auth via header
+
+
+//admin auth via header
 function adminAuth(req, res, next) {
   const adminSecret = req.headers["x-admin-secret"];
 
@@ -14,6 +18,8 @@ function adminAuth(req, res, next) {
   next();
 }
 
+
+
 router.post("/kyc/:company_id/approve", adminAuth, async (req, res) => {
   const { company_id } = req.params;
 
@@ -23,11 +29,13 @@ router.post("/kyc/:company_id/approve", adminAuth, async (req, res) => {
       [company_id]
     );
 
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Company not found" });
     }
 
     const company = result.rows[0];
+
 
     if (company.kyc_status === "approved") {
       return res.status(400).json({ error: "KYC already approved" });
@@ -44,6 +52,9 @@ router.post("/kyc/:company_id/approve", adminAuth, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
 
 router.post("/kyc/:company_id/reject", adminAuth, async (req, res) => {
   const { company_id } = req.params;
@@ -75,5 +86,7 @@ router.post("/kyc/:company_id/reject", adminAuth, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 
 module.exports = router;
