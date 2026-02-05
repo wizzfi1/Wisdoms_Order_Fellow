@@ -160,6 +160,7 @@ router.post("/status-updates", verifyWebhook, async (req, res) => {
     const allowedNextStatuses =
       STATUS_TRANSITIONS[order.current_status] || [];
 
+      
     if (!allowedNextStatuses.includes(new_status)) {
       return res.status(400).json({
         error: `Invalid status transition from ${order.current_status} to ${new_status}`,

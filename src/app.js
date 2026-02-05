@@ -31,7 +31,7 @@ app.use("/admin", adminRoutes);
 app.use("/webhooks", webhookLimiter, webhooksRoutes);
 app.use("/orders", ordersRoutes);
 app.get("/", (req, res) => {
-  res.send("My Order Fellow API running");
+  res.send("Wisdom's Order Fellow API running");
 });
 
 const port = process.env.PORT || 3000;

@@ -14,6 +14,7 @@ router.post("/submit", async (req, res) => {
     contact_person_phone,
   } = req.body;
 
+
   if (
     !business_email ||
     !business_registration_number ||
@@ -40,6 +41,9 @@ router.post("/submit", async (req, res) => {
 
     const company = result.rows[0];
 
+
+
+
     if (!company.email_verified) {
       return res.status(400).json({ error: "Email not verified" });
     }
@@ -48,7 +52,7 @@ router.post("/submit", async (req, res) => {
       return res.status(400).json({ error: "KYC already approved" });
     }
 
-    // store KYC info directly on companies table
+    // store KYC directly on companies table
     await pool.query(
       `UPDATE companies 
        SET 

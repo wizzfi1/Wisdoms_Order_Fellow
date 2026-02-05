@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 
-//admin auth via header
+//admin auth
 function adminAuth(req, res, next) {
   const adminSecret = req.headers["x-admin-secret"];
 

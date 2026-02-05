@@ -7,6 +7,8 @@ const router = express.Router();
 router.get("/:external_order_id", async (req, res) => {
   const { external_order_id } = req.params;
 
+ 
+ 
   try {
     const orderResult = await pool.query(
       `SELECT 
@@ -50,6 +52,9 @@ router.get("/:external_order_id", async (req, res) => {
       created_at: order.created_at,
       status_history: statusResult.rows,
     });
+
+
+
   } catch (err) {
     console.error("Order lookup error:", err);
     res.status(500).json({ error: "Internal server error" });

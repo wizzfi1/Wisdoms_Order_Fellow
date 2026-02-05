@@ -66,6 +66,8 @@ router.post("/register", async (req, res) => {
 router.post("/verify-otp", async (req, res) => {
   const { business_email, otp_code } = req.body;
 
+
+
   if (!business_email || !otp_code) {
     return res.status(400).json({ error: "Missing email or OTP" });
   }
@@ -78,15 +80,19 @@ router.post("/verify-otp", async (req, res) => {
       [business_email]
     );
 
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Company not found" });
     }
 
     const company = result.rows[0];
 
+
+
     if (company.email_verified) {
       return res.status(400).json({ error: "Email already verified" });
     }
+
 
     if (!company.otp_code || !company.otp_expires_at) {
       return res.status(400).json({ error: "No OTP found for this account" });
@@ -95,14 +101,18 @@ router.post("/verify-otp", async (req, res) => {
     const now = new Date();
     const expiresAt = new Date(company.otp_expires_at);
 
+
     if (now > expiresAt) {
       return res.status(400).json({ error: "OTP has expired" });
     }
+
 
     if (company.otp_code !== otp_code) {
       return res.status(400).json({ error: "Invalid OTP" });
     }
 
+    
+    
     await pool.query(
       `UPDATE companies 
        SET email_verified = true, otp_code = NULL, otp_expires_at = NULL 
