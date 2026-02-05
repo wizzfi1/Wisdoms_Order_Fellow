@@ -277,7 +277,7 @@ GET /orders/:external_order_id
 
 Email notifications are delivered using **Resend**, an HTTPS-based email API.
 
-Notifications are sent **asynchronously (non-blocking)** so that email delivery does not delay or interrupt core API flows.
+Notifications are sent **asynchronously** so that email delivery does not delay or interrupt core API flows.
 
 Notifications are triggered on:
 

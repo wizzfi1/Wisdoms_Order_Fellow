@@ -34,7 +34,6 @@ This project implements the full **My Order Fellow** specification as a **defens
 ### Notifications
 
 * Real email notifications via **Resend (HTTPS-based email API)**
-* Non-blocking, fire-and-forget delivery
 * Triggered on:
 
   * OTP generation
@@ -75,7 +74,6 @@ This project implements the full **My Order Fellow** specification as a **defens
 * resend
 * express-rate-limit
 
-No ORMs. No microservices. No background workers.
 
 ---
 
@@ -271,7 +269,7 @@ POST /admin/kyc/:company_id/reject
 Header:
 
 ```
-x-admin-secret: adm<ADMIN_SECRET>
+x-admin-secret: <ADMIN_SECRET>
 ```
 
 ---
@@ -342,8 +340,7 @@ GET /orders/:external_order_id
 * **Plain SQL** — keeps business logic explicit and reviewable
 * **Service-layer notifications** — enables provider swapping without route changes
 * **Strict status lifecycle enforcement** — prevents invalid state transitions
-* **Static admin authentication** — sufficient for MVP scope
-* **Selective rate limiting** — applied only where needed
+* **Static admin authentication** 
 
 ---
 
@@ -372,5 +369,3 @@ This project demonstrates:
 It was intentionally scoped as a **defensible MVP** to emphasize backend fundamentals, correctness, and clarity over infrastructure complexity.
 
 ---
-
-Built with purpose, clarity, and craftsmanship.
